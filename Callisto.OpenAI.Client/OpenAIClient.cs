@@ -10,7 +10,7 @@ namespace Callisto.OpenAI.Client;
 
 public class OpenAIClient : IOpenAIClient
 {
-    ChatClient _chatClient;
+    private readonly ChatClient _chatClient;
 
     public OpenAIClient(IOptions<OpenAIClientOptions> options)
     {
