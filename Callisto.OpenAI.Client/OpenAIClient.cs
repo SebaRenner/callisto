@@ -2,7 +2,7 @@
 
 using Azure.AI.OpenAI;
 
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 using OpenAI.Chat;
 
@@ -12,12 +12,12 @@ public class OpenAIClient : IOpenAIClient
 {
     ChatClient _chatClient;
 
-    public OpenAIClient(IConfiguration configuration)
+    public OpenAIClient(IOptions<OpenAIClientOptions> options)
     {
-        var endpoint = configuration["OpenAI:Endpoint"];
+        var endpoint = options.Value.Endpoint;
         // TODO: use DefaultAzureCredentials instead of apikey
-        var apiKey = configuration["OpenAI:ApiKey"];
-        var deploymentName = configuration["OpenAI:DeploymentName"];
+        var apiKey = options.Value.ApiKey;
+        var deploymentName = options.Value.DeploymentName;
 
         var azureClient = new AzureOpenAIClient(new Uri(endpoint), new ApiKeyCredential(apiKey));
         _chatClient = azureClient.GetChatClient(deploymentName);
