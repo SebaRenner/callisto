@@ -1,0 +1,6 @@
+@Callisto.API_HostAddress = http://localhost:5186
+
+GET {{Callisto.API_HostAddress}}/
+Accept: application/json
+
+###
