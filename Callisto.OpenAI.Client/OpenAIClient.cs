@@ -26,8 +26,41 @@ public class OpenAIClient : IOpenAIClient
     {
         var userMessage = new UserChatMessage(message);
 
-        var chatCompletion = await _chatClient.CompleteChatAsync([userMessage], cancellationToken: cancellationToken);
+        var chatCompletion = await _chatClient.CompleteChatAsync(
+            [userMessage],
+            CreateChatCompletionOptions(),
+            cancellationToken: cancellationToken);
 
-        return chatCompletion.Value.Content[0].Text;
+        if (chatCompletion.Value.ToolCalls.Count > 0)
+        {
+            var expression = chatCompletion.Value.ToolCalls[0].FunctionArguments.ToString();
+        }
+
+        var response = chatCompletion.Value.Content[0].Text;
+        return response;
+    }
+
+    private ChatCompletionOptions CreateChatCompletionOptions()
+    {
+        var calculator = ChatTool.CreateFunctionTool(
+            "Calculator",
+            "Perform all kinds of mathematical calculations",
+            BinaryData.FromString("""
+                {
+                    "type": "object",
+                    "properties": {
+                        "expression": {
+                            "type": "string",
+                            "description": "The mathematical expression to calculate."
+                        }
+                    },
+                    "required": ["expression"]
+                }
+                """));
+
+        var options = new ChatCompletionOptions();
+        options.Tools.Add(calculator);
+
+        return options;
     }
 }
