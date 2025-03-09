@@ -1,5 +1,4 @@
 ﻿using System.ClientModel;
-
 using Azure.AI.OpenAI;
 
 using Microsoft.Extensions.Options;
@@ -21,5 +20,14 @@ public class OpenAIClient : IOpenAIClient
 
         var azureClient = new AzureOpenAIClient(new Uri(endpoint), new ApiKeyCredential(apiKey));
         _chatClient = azureClient.GetChatClient(deploymentName);
+    }
+
+    public async Task<string> SendUserMessageAsync(string message, CancellationToken cancellationToken = default)
+    {
+        var userMessage = new UserChatMessage(message);
+
+        var chatCompletion = await _chatClient.CompleteChatAsync([userMessage], cancellationToken: cancellationToken);
+
+        return chatCompletion.Value.Content[0].Text;
     }
 }
